@@ -1,0 +1,211 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>COMINVE - Accesorios para Vehículos</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 font-sans">
+    <!-- Header -->
+    <header class="bg-green-900 text-white py-6">
+        <div class="container mx-auto px-4">
+            <h1 class="text-3xl font-bold">COMINVE IMPORT</h1>
+            <p class="mt-2">Accesorios Exteriores de Alta Calidad para Vehículos</p>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="bg-green-800 text-white py-4 sticky top-0 z-10">
+        <div class="container mx-auto px-4 flex justify-center space-x-6">
+            <a href="#vision" class="hover:text-blue-300">Visión y Misión</a>
+            <a href="#services" class="hover:text-blue-300">Servicios</a>
+            <a href="#products" class="hover:text-blue-300">Productos</a>
+            <a href="#why-us" class="hover:text-blue-300">Por Qué Elegirnos</a>
+            <a href="#contact" class="hover:text-blue-300">Contacto</a>
+        </div>
+    </nav>
+
+    <!-- Vision and Mission -->
+    <section id="vision" class="py-12">
+        <div class="container mx-auto px-4">
+            <h2 class="text-2xl font-bold mb-6 text-center">Nuestra Empresa</h2>
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h3 class="text-xl font-semibold mb-4">Visión</h3>
+                    <p>Ser la empresa líder en Perú en la provisión de accesorios exteriores de alta calidad para vehículos, ofreciendo soluciones innovadoras que mejoren la estética, funcionalidad y protección del automóvil.</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h3 class="text-xl font-semibold mb-4">Misión</h3>
+                    <p>Proveer a los propietarios de los vehículos accesorios exteriores que optimicen la experiencia de conducción, protejan su inversión y reflejen su estilo personal, respaldados por un servicio al cliente excepcional y productos de calidad garantizada.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services -->
+    <section id="services" class="bg-gray-200 py-12">
+        <div class="container mx-auto px-4">
+            <h2 class="text-2xl font-bold mb-6 text-center">Nuestros Servicios</h2>
+            <div class="grid md:grid-cols-3 gap-6">
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h3 class="text-lg font-semibold mb-2">Venta de Accesorios</h3>
+                    <p>Ofrecemos una amplia gama de productos diseñados específicamente para su vehículo.</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h3 class="text-lg font-semibold mb-2">Asesoría Personalizada</h3>
+                    <p>Nuestro equipo está disponible para ayudarte a seleccionar los accesorios que mejor se adapten a tus necesidades y preferencias.</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h3 class="text-lg font-semibold mb-2">Instalación</h3>
+                    <p>Contamos con personal capacitado para la instalación de accesorios, asegurando un ajuste perfecto y funcionamiento óptimo.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Products -->
+    <section id="products" class="py-12">
+        <div class="container mx-auto px-4">
+            <h2 class="text-2xl font-bold mb-6 text-center">Productos Destacados</h2>
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <img src="https://via.placeholder.com/300x200?text=Cobertores+Impermeables" alt="Cobertores Impermeables" class="w-full h-48 object-cover rounded-md mb-4">
+                    <h3 class="text-lg font-semibold mb-2">Cobertores Impermeables</h3>
+                    <p>Impermeable con interior de algodón afelpado. Protege contra el sol, lluvia y polvo. Incluye maletín para transporte.</p>
+                    <p class="mt-2 font-bold">Precio: S/ 210.00</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <img src="https://via.placeholder.com/300x200?text=Barras+Transversales" alt="Barras Transversales" class="w-full h-48 object-cover rounded-md mb-4">
+                    <h3 class="text-lg font-semibold mb-2">Barras Transversales</h3>
+                    <p>Barras de aluminio instaladas según el diseño del techo, con llave para seguridad. Mejoran la funcionalidad para transportar cargas voluminosas.</p>
+                    <p class="mt-2 font-bold">Precio: S/ 322.86</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <img src="https://via.placeholder.com/300x200?text=Parrillas+Porta+Equipaje" alt="Parrillas Porta Equipaje" class="w-full h-48 object-cover rounded-md mb-4">
+                    <h3 class="text-lg font-semibold mb-2">Parrillas Porta Equipaje</h3>
+                    <p>Parrillas universales resistentes a la intemperie, capacidad hasta 80 kg. Requieren barras transversales.</p>
+                    <p class="mt-2 font-bold">Precio: S/ 452.86</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <img src="https://via.placeholder.com/300x200?text=Pisos+5D" alt="Pisos 5D" class="w-full h-48 object-cover rounded-md mb-4">
+                    <h3 class="text-lg font-semibold mb-2">Pisos 5D</h3>
+                    <p>Diseño a medida con TPE y PVC de alta calidad. Resistente al desgaste, agua y suciedad, con diseño tipo diamante.</p>
+                    <p class="mt-2 font-bold">Precio: S/ 342.86</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <img src="https://via.placeholder.com/300x200?text=Corre+Lluvias" alt="Corre Lluvias" class="w-full h-48 object-cover rounded-md mb-4">
+                    <h3 class="text-lg font-semibold mb-2">Corre Lluvias</h3>
+                    <p>Diseño aerodinámico de 4 a 6 piezas, mejora visibilidad y confort en lluvia. Color: Negro.</p>
+                    <p class="mt-2 font-bold">Precio: S/ 157.14</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <img src="https://via.placeholder.com/300x200?text=Malla+de+Seguridad" alt="Malla de Seguridad" class="w-full h-48 object-cover rounded-md mb-4">
+                    <h3 class="text-lg font-semibold mb-2">Malla de Seguridad</h3>
+                    <p>Práctica y resistente para asegurar carga en la parrilla, evitando desplazamientos.</p>
+                    <p class="mt-2 font-bold">Precio: S/ 31.29</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <img src="https://via.placeholder.com/300x200?text=Forro+de+Timón" alt="Forro de Timón" class="w-full h-48 object-cover rounded-md mb-4">
+                    <h3 class="text-lg font-semibold mb-2">Forro de Timón</h3>
+                    <p>Material resistente a fricción y sudor, protege el volante contra rayos UV y rayaduras.</p>
+                    <p class="mt-2 font-bold">Precio: S/ 52.86</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Why Choose Us -->
+    <section id="why-us" class="bg-gray-200 py-12">
+        <div class="container mx-auto px-4">
+            <h2 class="text-2xl font-bold mb-6 text-center">¿Por Qué Elegirnos?</h2>
+            <div class="grid md:grid-cols-3 gap-6">
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h3 class="text-lg font-semibold mb-2">Productos de Calidad</h3>
+                    <p>Trabajamos con proveedores confiables para ofrecer accesorios duraderos y funcionales.</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h3 class="text-lg font-semibold mb-2">Precios Competitivos</h3>
+                    <p>Ofrecemos productos de alta calidad a precios accesibles.</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h3 class="text-lg font-semibold mb-2">Atención al Cliente</h3>
+                    <p>Nuestro equipo está comprometido en brindarte la mejor experiencia de compra.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact -->
+    <section id="contact" class="py-12">
+        <div class="container mx-auto px-4">
+            <h2 class="text-2xl font-bold mb-6 text-center">Contacto</h2>
+            <div class="bg-white p-6 rounded-lg shadow-md max-w-lg mx-auto">
+                <p><strong>Condiciones Comerciales:</strong></p>
+                <ul class="list-disc pl-6 mb-4">
+                    <li>Precios competitivos con márgenes adecuados.</li>
+                    <li>Entrega en 2 días útiles.</li>
+                    <li>Garantías oficiales y políticas claras de devolución.</li>
+                    <li>Adelanto del 50% y saldo al término de la instalación.</li>
+                </ul>
+                <p><strong>Medios de Pago:</strong> Transferencia bancaria, Yape/Plin, Efectivo</p>
+                <p class="mt-2">Nota: Los precios no incluyen I.G.V. y pueden variar según el proveedor.</p>
+                <p class="mt-4"><strong>Contacto:</strong></p>
+                <p>Jose Miguel Velazco</p>
+                <p>Tel: 926606553</p>
+                <p>Email: cominvesac@gmail.com</p>
+                <div class="mt-6 flex space-x-4 justify-center">
+                    <a href="https://wa.me/51926606553" target="_blank" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Contactar por WhatsApp</a>
+                    <a href="mailto:cominvesac@gmail.com" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Enviar Email</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-blue-900 text-white py-6">
+        <div class="container mx-auto px-4 text-center">
+            <p>© 2025 COMINVE IMPORT. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+</body>
+</html>
